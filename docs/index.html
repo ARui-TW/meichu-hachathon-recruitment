@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>梅竹黑客松招工表單整理</title>
+    <meta charset="utf-8" />
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"> 
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <!-- Font Icon -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="jumbotron text-center" style="margin-bottom: 0">
+      <h1>梅竹黑客松招工表單整理</h1>
+      <p>我人好好 ouo</p>
+    </div>
+    <nav class="navbar navbar-expand-sm bg-light">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="formatResponse('行政部')">行政部</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="formatResponse('公關部')">公關部</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="formatResponse('開發部')">開發部</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="formatResponse('設計部')">設計部</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="formatResponse('行銷部')">行銷部</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="formatResponse('活動部')">活動部</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="formatResponse('財務部')">財務部</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="container" style="margin-top: 30px">
+      <h4>基本資料</h4>
+      <div class="table-responsive">
+        <table id="table-basic" class="table table-hover">
+          <thead>
+            <tr></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="row">
+        <button class="btn btn-primary" id="authorize_button" style="display: none;">登入按這</button>
+        <button class="btn btn-primary" id="signout_button" style="display: none;">登出按這</button>
+      </div>
+    </div>
+
+    <div class="modal" id="more-info-modal">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="more-info-modal-title"></h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body" id="more-info-modal-body">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">關閉</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      // Client ID and API key from the Developer Console
+      var CLIENT_ID = '650115215157-ekll5mjga1k8d7gnbs6t8a1aetnpqr6i.apps.googleusercontent.com';
+      var API_KEY = 'AIzaSyBsmGC6nIQvcuk4EpL_2Br9l5w6MHxxF4A';
+
+      // Array of API discovery doc URLs for APIs used by the quickstart
+      var DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4"];
+
+      // Authorization scopes required by the API; multiple scopes can be
+      // included, separated by spaces.
+      var SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly";
+
+      var authorizeButton = document.getElementById('authorize_button');
+      var signoutButton = document.getElementById('signout_button');
+
+      /**
+       *  On load, called to load the auth2 library and API client library.
+       */
+      function handleClientLoad() {
+        gapi.load('client:auth2', initClient);
+      }
+
+      /**
+       *  Initializes the API client library and sets up sign-in state
+       *  listeners.
+       */
+      function initClient() {
+        gapi.client.init({
+          apiKey: API_KEY,
+          clientId: CLIENT_ID,
+          discoveryDocs: DISCOVERY_DOCS,
+          scope: SCOPES
+        }).then(function () {
+          // Listen for sign-in state changes.
+          gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+
+          // Handle the initial sign-in state.
+          updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+          authorizeButton.onclick = handleAuthClick;
+          signoutButton.onclick = handleSignoutClick;
+        }, function(error) {
+          console.log(JSON.stringify(error, null, 2));
+        });
+      }
+
+      /**
+       *  Called when the signed in status changes, to update the UI
+       *  appropriately. After a sign-in, the API is called.
+       */
+      function updateSigninStatus(isSignedIn) {
+        if (isSignedIn) {
+          authorizeButton.style.display = 'none';
+          signoutButton.style.display = 'block';
+          formatResponse();
+        } else {
+          authorizeButton.style.display = 'block';
+          signoutButton.style.display = 'none';
+        }
+      }
+
+      /**
+       *  Sign in the user upon button click.
+       */
+      function handleAuthClick(event) {
+        gapi.auth2.getAuthInstance().signIn();
+      }
+
+      /**
+       *  Sign out the user upon button click.
+       */
+      function handleSignoutClick(event) {
+        gapi.auth2.getAuthInstance().signOut();
+      }
+
+      /**
+       * Filter by departmentName
+       * column: 11, 59, 104
+       */
+      function filterResult(result, departmentName) {
+        for (let i = 0; i < result.length; i++) result[i].push(i + 2);
+        const filter = (data) => {
+          if (data[11] === departmentName) data.push(1);
+          else if (data[59] === departmentName) data.push(2);
+          else if (data[104] === departmentName) data.push(3);
+          else data.push(0);
+          const res = data.slice(-1)[0];
+          return !!res;
+        }
+        const filterResult = result.filter(data => filter(data));
+        return filterResult;
+      }
+
+      /**
+       * Formet Basic Table Header
+       */
+      function formatHeader(headers) {
+        const titleObj = {
+          '時間戳記': {
+            name: '填寫時間',
+            width: '7rem'
+          },
+          '您的姓名': {
+            name: '姓名',
+            width: '4rem'
+          },
+          '您的大學': {
+            name: '大學',
+            width: '5rem'
+          },
+          '您的系級': {
+            name: '系級',
+            width: '6rem'
+          },
+          '常用信箱': {
+            name: '信箱',
+            width: '5rem'
+          },
+          '您的手機': {
+            name: '手機',
+            width: '5rem'
+          },
+          '能進行面試的時間 (多選)': {
+            name: '面試時間',
+            width: '10rem'
+          }
+        };
+
+        const foundHeader = document.getElementById('table-basic').getElementsByTagName('tr')[0];
+        foundHeader.innerHTML = '';
+        const headerInfoCell = document.createElement('th');
+        headerInfoCell.innerHTML = '查看';
+        headerInfoCell.setAttribute('nowrap', '');
+        headerInfoCell.setAttribute('style', 'width: 1rem');
+        foundHeader.appendChild(headerInfoCell);
+
+        const titleList = [0, 1, 2, 3, 4, 5, 8];
+        for (const i of titleList) {
+          const newElement = document.createElement('th');
+          let title = titleObj[headers[i]];
+          newElement.innerHTML = title.name;
+          newElement.setAttribute('nowrap', '');
+          newElement.setAttribute('style', `width: ${title.width}`);
+          foundHeader.appendChild(newElement);
+        }
+      }
+
+      /**
+       * Fetch data, open dialog
+       */
+      async function openDialog(id, departmentName) {
+        gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: '1mI0iumvGQ51G5CWSoXfO53svj8DZlTiEBo4lRG9mKkc',
+          range: `表單回應 1!A1:EY${id}`,
+        }).then(response => {
+          const headers = response.result.values[0];
+          const result = response.result.values[id - 1];
+          let idx = null;
+          if (result[11] === departmentName) idx = 0;
+          else if (result[59] === departmentName) idx = 1;
+          else if (result[104] === departmentName) idx = 2;
+          const rangeObj = {
+            // This is so wasting time qq
+            '行銷部': [ [13, 15], [153, 155], [106, 108]],
+            '開發部': [ [16, 40], [64, 88], [109, 133]],
+            '行政部': [ [41, 43] ],
+            '設計部': [ [44, 48], [89, 93], [139, 143]],
+            '財務部': [ [49, 53], [94, 98], [134, 138]],
+            '活動部': [ [54, 57], [99, 102], [144, 147]],
+            '公關部': [ [58, 59], [103, 104], [148, 149]]
+          };
+          const range = rangeObj[departmentName][idx];
+          console.log(range, idx);
+          const foundModalTitle = document.getElementById('more-info-modal-title');
+          foundModalTitle.innerHTML = result[1];
+          // Clear Modal
+          const foundModalBody = document.getElementById('more-info-modal-body');
+          foundModalBody.innerHTML = '';
+          for (let i = 0; i < result.length; i++) {
+            if (i > 10 && (i < range[0] - 1 || i > range[1] - 1)) continue;
+            const newCard = document.createElement('div');
+            newCard.setAttribute('class', 'card');
+            const newCardHeader = document.createElement('div');
+            newCardHeader.setAttribute('class', 'card-header');
+            newCardHeader.innerHTML = headers[i];
+            const newCardBody = document.createElement('div');
+            newCardBody.setAttribute('class', 'card-body');
+            newCardBody.innerHTML = result[i];
+            
+            newCard.appendChild(newCardHeader);
+            newCard.appendChild(newCardBody);
+            foundModalBody.appendChild(newCard);
+          }
+        });
+      }
+
+      /**
+       * Format Basic Table Body
+       */
+      function formatBody(result, departmentName) {
+        const foundBody = document.getElementById('table-basic').getElementsByTagName('tbody')[0];
+        foundBody.innerHTML = '';
+        for (let i = 0; i < result.length; i++) {
+          const newElement = document.createElement('tr');
+          const newInfoCell = document.createElement('td');
+          newInfoCell.innerHTML = '\
+            <button type="button" class="btn" data-toggle="modal" data-target="#more-info-modal">\
+              <i class="fas fa-search-plus" aria-hidden="true"></i>\
+            </button>\
+          ';
+          newInfoCell.setAttribute('onclick', `openDialog(${result[i].slice(-2, -1)}, '${departmentName}')`);
+          newElement.appendChild(newInfoCell);
+          const bodyObjList = [
+            {
+              id: 0,
+              formatter: (value) => {
+                const splits = value.split(' ');
+                return splits[0] + '<br>' + splits[1] + splits[2];
+              },
+              style: 'text-align: center'
+            }, // 填寫時間
+            { id: 1, }, // 姓名
+            { id: 2, }, // 大學
+            { id: 3, }, // 系級
+            { id: 4, }, // 信箱
+            {
+              id: 5,
+              formatter: (value) => value.replace(/-/g, '')
+            }, // 手機
+            {
+              id: 8,
+              formatter: (value) => {
+                const splits = value.split(', ');
+                return splits.join('<br>');
+              },
+              style: 'text-align: center'
+            }, // 面試時間
+          ];
+          for (const bodyObj of bodyObjList) {
+            const newCell = document.createElement('td');
+            const { formatter = null, style = '' } = bodyObj;
+            const res = result[i][bodyObj.id];
+            const cellHtml = formatter ? formatter(res) : res;
+            newCell.innerHTML = cellHtml;
+            newCell.setAttribute('style', style);
+            newElement.appendChild(newCell);
+          }
+          foundBody.appendChild(newElement);
+        }
+      }
+
+      /**
+       * Get sheets & format
+       * https://docs.google.com/spreadsheets/d/1mI0iumvGQ51G5CWSoXfO53svj8DZlTiEBo4lRG9mKkc/edit#gid=1827176652
+       */
+      function formatResponse(departmentName = '行政部') {
+        gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: '1mI0iumvGQ51G5CWSoXfO53svj8DZlTiEBo4lRG9mKkc',
+          range: '表單回應 1!A1:EY',
+        }).then(response => {
+          const result = filterResult(response.result.values.slice(1), departmentName);
+          const headers = response.result.values[0];
+          // 1. Column A~K are basic problems, fetch all header
+          formatHeader(headers);
+          // 3. Column A~K are basic problems, fetch all body
+          formatBody(result, departmentName);
+        }, function(response) {
+          console.error(response.result.error.message);
+        });
+      }
+
+    </script>
+
+    <script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};handleClientLoad()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>
+  </body>
+</html>
