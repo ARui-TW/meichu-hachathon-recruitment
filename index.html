@@ -45,7 +45,11 @@
       </ul>
     </nav>
     <div class="container" style="margin-top: 30px">
-      <h4>基本資料</h4>
+      <div class="d-flex" style="margin-bottom: 10px">
+        <h4 style="margin-right: auto">基本資料</h4>
+        <button class="btn btn-primary" id="authorize_button" style="display: none;">登入</button>
+        <button class="btn btn-danger" id="signout_button" style="display: none;">登出</button>
+      </div>
       <div class="table-responsive">
         <table id="table-basic" class="table table-hover">
           <thead>
@@ -53,10 +57,6 @@
           </thead>
           <tbody></tbody>
         </table>
-      </div>
-      <div class="row">
-        <button class="btn btn-primary" id="authorize_button" style="display: none;">登入按這</button>
-        <button class="btn btn-primary" id="signout_button" style="display: none;">登出按這</button>
       </div>
     </div>
 
@@ -74,6 +74,10 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="jumbotron text-center" style="margin-bottom: 0">
+      <p>Developer: Justin0u0 &lt;<a href="mailto:dancinglinkxalgorithm@gmail.com">dancinglinkxalgorithm@gmail.com</a>&gt;</p>
     </div>
 
     <script type="text/javascript">
@@ -175,31 +179,31 @@
         const titleObj = {
           '時間戳記': {
             name: '填寫時間',
-            width: '7rem'
+            width: '120px'
           },
           '您的姓名': {
             name: '姓名',
-            width: '4rem'
+            width: '80px'
           },
           '您的大學': {
             name: '大學',
-            width: '5rem'
+            width: '100px'
           },
           '您的系級': {
             name: '系級',
-            width: '6rem'
+            width: '100px'
           },
           '常用信箱': {
             name: '信箱',
-            width: '5rem'
+            width: '250px'
           },
           '您的手機': {
             name: '手機',
-            width: '5rem'
+            width: '80px'
           },
           '能進行面試的時間 (多選)': {
             name: '面試時間',
-            width: '10rem'
+            width: '200px'
           }
         };
 
@@ -208,7 +212,6 @@
         const headerInfoCell = document.createElement('th');
         headerInfoCell.innerHTML = '查看';
         headerInfoCell.setAttribute('nowrap', '');
-        headerInfoCell.setAttribute('style', 'width: 1rem');
         foundHeader.appendChild(headerInfoCell);
 
         const titleList = [0, 1, 2, 3, 4, 5, 8];
@@ -249,7 +252,7 @@
           const range = rangeObj[departmentName][idx];
           console.log(range, idx);
           const foundModalTitle = document.getElementById('more-info-modal-title');
-          foundModalTitle.innerHTML = result[1];
+          foundModalTitle.innerHTML = `${result[1]} - ${departmentName} - 志願${idx + 1}`
           // Clear Modal
           const foundModalBody = document.getElementById('more-info-modal-body');
           foundModalBody.innerHTML = '';
@@ -257,9 +260,10 @@
             if (i > 10 && (i < range[0] - 1 || i > range[1] - 1)) continue;
             const newCard = document.createElement('div');
             newCard.setAttribute('class', 'card');
+            newCard.setAttribute('style', 'margin-bottom: 5px')
             const newCardHeader = document.createElement('div');
             newCardHeader.setAttribute('class', 'card-header');
-            newCardHeader.innerHTML = headers[i];
+            newCardHeader.innerHTML = `<strong>${headers[i]}</strong>`
             const newCardBody = document.createElement('div');
             newCardBody.setAttribute('class', 'card-body');
             newCardBody.innerHTML = result[i];
