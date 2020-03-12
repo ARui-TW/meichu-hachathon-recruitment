@@ -42,11 +42,14 @@
         <li class="nav-item">
           <a class="nav-link" href="#" onclick="formatResponse('財務部')">財務部</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link text-success" href="#" onclick="formatTotal()">統整</a>
+        </li>
       </ul>
     </nav>
-    <div class="container" style="margin-top: 30px">
+    <div id="container-basic" class="container" style="margin-top: 30px" hidden>
       <div class="d-flex" style="margin-bottom: 10px">
-        <h4 style="margin-right: auto">基本資料</h4>
+        <h4 id="container-header" style="margin-right: auto"></h4>
         <button class="btn btn-primary" id="authorize_button" style="display: none;">登入</button>
         <button class="btn btn-danger" id="signout_button" style="display: none;">登出</button>
       </div>
@@ -56,6 +59,31 @@
             <tr></tr>
           </thead>
           <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="container-total" class="container" style="margin-top: 30px" hidden>
+      <div class="table-responsive">
+        <h4>人數統計</h4>
+        <table id="table-total" class="table table-bordered">
+          <thead>
+            <tr class="text-center">
+              <th></th>
+              <th>第一志願</th>
+              <th>第二志願</th>
+              <th>第三志願</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-total" class="text-center">
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -175,7 +203,7 @@
       /**
        * Formet Basic Table Header
        */
-      function formatHeader(headers) {
+      function formatHeader(headers, departmentName) {
         const titleObj = {
           '時間戳記': {
             name: '填寫時間',
@@ -206,6 +234,9 @@
             width: '200px'
           }
         };
+
+        const foundTitle = document.getElementById('container-header');
+        foundTitle.innerHTML = departmentName;
 
         const foundHeader = document.getElementById('table-basic').getElementsByTagName('tr')[0];
         foundHeader.innerHTML = '';
@@ -241,16 +272,15 @@
           else if (result[104] === departmentName) idx = 2;
           const rangeObj = {
             // This is so wasting time qq
-            '行銷部': [ [13, 15], [153, 155], [106, 108]],
-            '開發部': [ [16, 40], [64, 88], [109, 133]],
+            '行銷部': [ [13, 15], [153, 155], [106, 108] ],
+            '開發部': [ [16, 40], [64, 88], [109, 133] ],
             '行政部': [ [41, 43] ],
-            '設計部': [ [44, 48], [89, 93], [139, 143]],
-            '財務部': [ [49, 53], [94, 98], [134, 138]],
-            '活動部': [ [54, 57], [99, 102], [144, 147]],
-            '公關部': [ [58, 59], [103, 104], [148, 149]]
+            '設計部': [ [44, 48], [89, 93], [139, 143] ],
+            '財務部': [ [49, 53], [94, 98], [134, 138] ],
+            '活動部': [ [54, 57], [99, 102], [144, 147] ],
+            '公關部': [ [58, 59], [103, 104], [148, 149] ]
           };
           const range = rangeObj[departmentName][idx];
-          console.log(range, idx);
           const foundModalTitle = document.getElementById('more-info-modal-title');
           foundModalTitle.innerHTML = `${result[1]} - ${departmentName} - 志願${idx + 1}`
           // Clear Modal
@@ -279,6 +309,8 @@
        * Format Basic Table Body
        */
       function formatBody(result, departmentName) {
+        const foundTitle = document.getElementById('container-header');
+        foundTitle.innerHTML += `（${result.length}）`;
         const foundBody = document.getElementById('table-basic').getElementsByTagName('tbody')[0];
         foundBody.innerHTML = '';
         for (let i = 0; i < result.length; i++) {
@@ -335,17 +367,79 @@
        * https://docs.google.com/spreadsheets/d/1mI0iumvGQ51G5CWSoXfO53svj8DZlTiEBo4lRG9mKkc/edit#gid=1827176652
        */
       function formatResponse(departmentName = '行政部') {
+        const foundBasicContainer = document.getElementById('container-basic');
+        foundBasicContainer.removeAttribute('hidden');
+        const foundTotalContainer = document.getElementById('container-total');
+        foundTotalContainer.setAttribute('hidden', true);
         gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId: '1mI0iumvGQ51G5CWSoXfO53svj8DZlTiEBo4lRG9mKkc',
           range: '表單回應 1!A1:EY',
         }).then(response => {
           const result = filterResult(response.result.values.slice(1), departmentName);
           const headers = response.result.values[0];
-          // 1. Column A~K are basic problems, fetch all header
-          formatHeader(headers);
-          // 3. Column A~K are basic problems, fetch all body
+          formatHeader(headers, departmentName);
           formatBody(result, departmentName);
-        }, function(response) {
+        }, response => {
+          console.error(response.result.error.message);
+        });
+      }
+
+      /**
+       * Count Applicant by Department
+       */
+      function formatApplicantCount(result) {
+        const newElement = document.createElement('div');
+        newElement.setAttribute('class', 'row');
+
+        const departmentList = ['行政部', '公關部', '開發部', '設計部', '行銷部', '活動部', '財務部'];
+        const totalObj = {};
+        for (const department of departmentList) totalObj[department] = { first: 0, second: 0, third: 0 };
+        for (const single of result) {
+          if (single[11] !== '') {
+            const found = departmentList.find(d => d === single[11]);
+            if (!!found) totalObj[found].first += 1;
+          }
+          if (single[59] !== '') {
+            const found = departmentList.find(d => d === single[59]);
+            if (!!found) totalObj[found].second += 1;
+          }
+          if (single[104] !== '') {
+            const found = departmentList.find(d => d === single[104]);
+            if (!!found) totalObj[found].third += 1;
+          }
+        }
+        const foundTableRows = document.getElementById('tbody-total').children;
+        for (let i = 0; i < departmentList.length; i++) {
+          const tableRow = foundTableRows[i];
+          const department = departmentList[i];
+          tableRow.innerHTML = `<th class="text-right" style="width: 100px">${department}</th>`;
+          const firstCell = document.createElement('td');
+          firstCell.innerHTML = totalObj[department].first;
+          const secondCell = document.createElement('td');
+          secondCell.innerHTML = totalObj[department].second;
+          const thirdCell = document.createElement('td');
+          thirdCell.innerHTML = totalObj[department].third;
+          tableRow.appendChild(firstCell);
+          tableRow.appendChild(secondCell);
+          tableRow.appendChild(thirdCell);
+        }
+      }
+
+      /**
+       * All Data
+       */
+      function formatTotal() {
+        const foundBasicContainer = document.getElementById('container-basic');
+        foundBasicContainer.setAttribute('hidden', true);
+        const foundTotalContainer = document.getElementById('container-total');
+        foundTotalContainer.removeAttribute('hidden');
+        gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: '1mI0iumvGQ51G5CWSoXfO53svj8DZlTiEBo4lRG9mKkc',
+          range: '表單回應 1!A1:EY',
+        }).then(response => {
+          const result = response.result.values.slice(1);
+          formatApplicantCount(result);
+        }, response => {
           console.error(response.result.error.message);
         });
       }
