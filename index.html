@@ -412,7 +412,7 @@
         for (let i = 0; i < departmentList.length; i++) {
           const tableRow = foundTableRows[i];
           const department = departmentList[i];
-          tableRow.innerHTML = `<td class="text-right" style="width: 100px">${department}</td>`;
+          tableRow.innerHTML = `<th class="text-right" style="width: 100px">${department}</th>`;
           const firstCell = document.createElement('td');
           firstCell.innerHTML = totalObj[department].first;
           const secondCell = document.createElement('td');
