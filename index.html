@@ -298,7 +298,7 @@
             newCardHeader.innerHTML = `<strong>${headers[i]}</strong>`
             const newCardBody = document.createElement('div');
             newCardBody.setAttribute('class', 'card-body');
-            newCardBody.innerHTML = result[i];
+            newCardBody.innerText = result[i];
             
             newCard.appendChild(newCardHeader);
             newCard.appendChild(newCardBody);
