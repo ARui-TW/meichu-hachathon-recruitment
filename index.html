@@ -73,6 +73,7 @@
               <th>第一志願</th>
               <th>第二志願</th>
               <th>第三志願</th>
+              <th>總計</th>
             </tr>
           </thead>
           <tbody id="tbody-total" class="text-center">
@@ -243,6 +244,7 @@
         const headerInfoCell = document.createElement('th');
         headerInfoCell.innerHTML = '查看';
         headerInfoCell.setAttribute('nowrap', '');
+        headerInfoCell.setAttribute('style', 'width: 50px');
         foundHeader.appendChild(headerInfoCell);
 
         const titleList = [0, 1, 2, 3, 4, 5, 8];
@@ -419,9 +421,12 @@
           secondCell.innerHTML = totalObj[department].second;
           const thirdCell = document.createElement('td');
           thirdCell.innerHTML = totalObj[department].third;
+          const lastCell = document.createElement('td');
+          lastCell.innerHTML = totalObj[department].first + totalObj[department].second + totalObj[department].third;
           tableRow.appendChild(firstCell);
           tableRow.appendChild(secondCell);
           tableRow.appendChild(thirdCell);
+          tableRow.appendChild(lastCell);
         }
       }
 
