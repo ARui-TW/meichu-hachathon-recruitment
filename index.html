@@ -17,7 +17,7 @@
   <body>
     <div class="jumbotron text-center" style="margin-bottom: 0">
       <h1>梅竹黑客松招工表單整理</h1>
-      <p>我人好好 ouo</p>
+      <p>前部長人好好 ouo</p>
     </div>
     <nav class="navbar navbar-expand-sm bg-light">
       <ul class="navbar-nav">
@@ -106,13 +106,16 @@
     </div>
 
     <div class="jumbotron text-center" style="margin-bottom: 0">
-      <p>Developer: Justin0u0 &lt;<a href="mailto:dancinglinkxalgorithm@gmail.com">dancinglinkxalgorithm@gmail.com</a>&gt;</p>
+      <p>
+        Developer: Justin0u0 &lt;<a href="mailto:dancinglinkxalgorithm@gmail.com">dancinglinkxalgorithm@gmail.com</a>&gt;<br>
+        Modified by: ARui &lt;<a href="mailto:chen108060030@gapp.nthu.edu.tw">chen108060030@gapp.nthu.edu.tw</a>&gt;
+      </p>
     </div>
 
     <script type="text/javascript">
       // Client ID and API key from the Developer Console
-      var CLIENT_ID = '650115215157-qb8gnodq09qtt2craahqc1ff4vbg5k1n.apps.googleusercontent.com';
-      var API_KEY = 'AIzaSyBigR-Wa-fkF0p8NAzNPXeMEAPujjzejbU';
+      var CLIENT_ID = '214591022020-a42e56coatvnf0pi5f20c94kfashkr8o.apps.googleusercontent.com';
+      var API_KEY = 'AIzaSyBK5rusrcWumbPia-7sWGaehlGE_yaqPsU';
 
       // Array of API discovery doc URLs for APIs used by the quickstart
       var DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4"];
@@ -191,8 +194,8 @@
         for (let i = 0; i < result.length; i++) result[i].push(i + 2);
         const filter = (data) => {
           if (data[11] === departmentName) data.push(1);
-          else if (data[59] === departmentName) data.push(2);
-          else if (data[104] === departmentName) data.push(3);
+          else if (data[79] === departmentName) data.push(2);
+          else if (data[147] === departmentName) data.push(3);
           else data.push(0);
           const res = data.slice(-1)[0];
           return !!res;
@@ -263,24 +266,24 @@
        */
       async function openDialog(id, departmentName) {
         gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '1mI0iumvGQ51G5CWSoXfO53svj8DZlTiEBo4lRG9mKkc',
-          range: `表單回應 1!A1:EY${id}`,
+          spreadsheetId: '1hKp9pQWTA2uYzYnHpBoHWjO6U8AX9om3KTvMuYpp8YQ',
+          range: `表單回應 1!A1:HG${id}`,
         }).then(response => {
           const headers = response.result.values[0];
           const result = response.result.values[id - 1];
           let idx = null;
           if (result[11] === departmentName) idx = 0;
-          else if (result[59] === departmentName) idx = 1;
-          else if (result[104] === departmentName) idx = 2;
+          else if (result[79] === departmentName) idx = 1;
+          else if (result[147] === departmentName) idx = 2;
           const rangeObj = {
             // This is so wasting time qq
-            '行銷部': [ [13, 15], [153, 155], [106, 108] ],
-            '開發部': [ [16, 40], [64, 88], [109, 133] ],
-            '行政部': [ [41, 43] ],
-            '設計部': [ [44, 48], [89, 93], [139, 143] ],
-            '財務部': [ [49, 53], [94, 98], [134, 138] ],
-            '活動部': [ [54, 57], [99, 102], [144, 147] ],
-            '公關部': [ [58, 59], [103, 104], [148, 149] ]
+            '行銷部': [ [23, 32], [91, 100], [159, 168] ],
+            '開發部': [ [46, 70], [114, 138], [182, 206] ],
+            '行政部': [ [13, 22], [81, 90], [149, 158] ],
+            '設計部': [ [71, 79], [139, 147], [207, 215] ],
+            '財務部': [ [41, 45], [109, 113], [177, 181] ],
+            '活動部': [ [36, 40], [104, 108], [172, 176] ],
+            '公關部': [ [33, 35], [101, 103], [169, 171] ]
           };
           const range = rangeObj[departmentName][idx];
           const foundModalTitle = document.getElementById('more-info-modal-title');
@@ -366,7 +369,7 @@
 
       /**
        * Get sheets & format
-       * https://docs.google.com/spreadsheets/d/1mI0iumvGQ51G5CWSoXfO53svj8DZlTiEBo4lRG9mKkc/edit#gid=1827176652
+       * https://docs.google.com/spreadsheets/d/1hKp9pQWTA2uYzYnHpBoHWjO6U8AX9om3KTvMuYpp8YQ/edit?ts=60462185#gid=1014783424
        */
       function formatResponse(departmentName = '行政部') {
         const foundBasicContainer = document.getElementById('container-basic');
@@ -374,8 +377,8 @@
         const foundTotalContainer = document.getElementById('container-total');
         foundTotalContainer.setAttribute('hidden', true);
         gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '1mI0iumvGQ51G5CWSoXfO53svj8DZlTiEBo4lRG9mKkc',
-          range: '表單回應 1!A1:EY',
+          spreadsheetId: '1hKp9pQWTA2uYzYnHpBoHWjO6U8AX9om3KTvMuYpp8YQ',
+          range: '表單回應 1!A1:HG',
         }).then(response => {
           const result = filterResult(response.result.values.slice(1), departmentName);
           const headers = response.result.values[0];
@@ -439,8 +442,8 @@
         const foundTotalContainer = document.getElementById('container-total');
         foundTotalContainer.removeAttribute('hidden');
         gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '1mI0iumvGQ51G5CWSoXfO53svj8DZlTiEBo4lRG9mKkc',
-          range: '表單回應 1!A1:EY',
+          spreadsheetId: '1hKp9pQWTA2uYzYnHpBoHWjO6U8AX9om3KTvMuYpp8YQ',
+          range: '表單回應 1!A1:HG',
         }).then(response => {
           const result = response.result.values.slice(1);
           formatApplicantCount(result);
