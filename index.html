@@ -188,7 +188,7 @@
 
       /**
        * Filter by departmentName
-       * column: 11, 59, 104
+       * column: 11, 79, 147
        */
       function filterResult(result, departmentName) {
         for (let i = 0; i < result.length; i++) result[i].push(i + 2);
@@ -404,12 +404,12 @@
             const found = departmentList.find(d => d === single[11]);
             if (!!found) totalObj[found].first += 1;
           }
-          if (single[59] !== '') {
-            const found = departmentList.find(d => d === single[59]);
+          if (single[79] !== '') {
+            const found = departmentList.find(d => d === single[79]);
             if (!!found) totalObj[found].second += 1;
           }
-          if (single[104] !== '') {
-            const found = departmentList.find(d => d === single[104]);
+          if (single[147] !== '') {
+            const found = departmentList.find(d => d === single[147]);
             if (!!found) totalObj[found].third += 1;
           }
         }
